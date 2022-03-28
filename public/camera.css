@@ -42,7 +42,7 @@ video {
     width: 60px;
     height: 60px;
     border: 1px solid transparent;
-    outline: 3px solid white;
+    box-shadow: 0 0 3px white;
     position: relative;
 
     -moz-background-clip: border;     /* Firefox 3.6 */
