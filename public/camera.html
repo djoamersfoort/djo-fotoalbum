@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script defer src="camera.js"></script>
+    <link rel="stylesheet" href="camera.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
+<body>
+    <video class="cam" id="camera"></video>
+    <div class="bar">
+        <div class="types">
+            <p class="type selected" id="photo">PHOTO</p>
+            <p class="type" id="video">VIDEO</p>
+        </div>
+        <div id="button" class="button">
+            <div class="record" id="buttonafter"></div>
+        </div>
+    </div>
+    <form class="form" id="form" action="/upload" enctype="multipart/form-data">
+        <input id="file" type="file" name="photo">
+    </form>
+    <div class="rotate">
+        <img src="rotate-right-solid.svg">
+        Rotate your device for recommended picture size!
+    </div>
+</body>
+</html>
