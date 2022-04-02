@@ -7,6 +7,8 @@ const multer = require("multer");
 const fs = require("fs");
 const albums = require("./data/albums.json");
 const mime = require("mime-types");
+const { exec } = require("child_process");
+const sharp = require("sharp");
 
 const app = express();
 app.use(session({
@@ -112,11 +114,27 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 })
 
-app.post("/upload/:album", upload.single("photo"), (req, res) => {
+app.post("/upload/:album", upload.single("photo"), async (req, res) => {
     if (typeof req.session.user === "undefined") return res.json({error: 1, msg: "Invalid user!"});
+    if (req.file.mimetype.startsWith("video/")) {
+        exec(`ffmpeg -i "${req.file.path}" -c:v libx264 -preset veryfast -crf 22 -c:a aac -b:a 128k -strict -2 "${req.file.path}.mp4"`, (err, stdout, stderr) => {
+            if (err) return console.log({error: 1, msg: err});
 
-
-    return res.json({error: 0});
+            fs.unlink(req.file.path, () => {});
+            fs.rename(`${req.file.path}.mp4`, req.file.path, () => {
+                return res.json({error: 0});
+            });
+        });
+    } else if (req.file.mimetype.startsWith("image/")) {
+        await sharp(req.file.path)
+            .webp({quality: 20})
+            .toFile(`${req.file.path}.webp`);
+        fs.unlink(req.file.path, () => {
+            fs.rename(`${req.file.path}.webp`, req.file.path, () => {
+                return res.json({error: 0});
+            });
+        });
+    }
 })
 
 app.get("/files/:album", (req, res) => {
