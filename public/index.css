@@ -69,14 +69,11 @@ body {
 }
 
 .pictures {
-    max-width: 750px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 250px);
-    margin-bottom: 45px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     position: absolute;
-    left: 50%;
-    transform: translate(-50%);
-    margin-top: 34px;
+    margin: 35px auto 45px auto;
 }
 
 .pictures .holder {
@@ -97,8 +94,8 @@ body {
 }
 
 .pictures .img {
-    width: 240px;
-    height: 160px;
+    width: 30vw;
+    height: 29vh;
     object-fit: cover;
     margin: 5px;
 }
