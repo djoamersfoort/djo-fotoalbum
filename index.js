@@ -172,5 +172,22 @@ app.get("/file/:album/:id", (req, res) => {
 app.get("/getAlbums", (req, res) => {
     res.json(albums);
 })
+app.get("/delete/:album/:file", (req, res) => {
+    if (typeof req.session.user === "undefined") return res.send("Not signed in!");
+    if (typeof albums[req.params.album] === "undefined") return res.send("Album not found!");
+    if (!fs.existsSync(`${__dirname}/${albums[req.params.album].dir}/${req.params.file}`)) return res.send("File not found!");
+    if (!req.params.file.includes(`user${req.session.user}`)) return res.send("You can't delete this file!");
+
+    fs.unlink(`${albums[req.params.album].dir}/${req.params.file}`, () => {
+        res.redirect(`/album?album=${req.params.album}`);
+    });
+})
+app.get("/permissions", (req, res) => {
+    if (typeof req.session.user === "undefined") return res.send("Not signed in!");
+
+    return res.json([
+        `user${req.session.user}`,
+    ])
+})
 
 app.listen(3000, () => {console.log(`App listening on port 3000`)});

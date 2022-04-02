@@ -10,8 +10,12 @@ const pages = [];
 let photos = [];
 let pageEls = [];
 let open = false;
+let permissions;
 
 async function get() {
+    const pRes = await fetch("/permissions");
+    permissions = await pRes.json();
+
     const res = await fetch(`/files/${urlParams.get("album")}`);
     const body = await res.json();
     const switcher = document.querySelector("#switcher");
@@ -74,17 +78,35 @@ function openPage(page) {
 
             images.append(holder);
         } else {
+            const holder = document.createElement("div");
+            holder.classList.add("holder");
             const img = document.createElement("img");
             img.src = `/file/${page[i]}`;
-            img.addEventListener("click", () => {
+            holder.addEventListener("click", () => {
                 popup.style.display = "block";
                 setSrc(img.src);
                 item = photos.indexOf(page[i]);
                 open = true;
             })
+            for (let permission in permissions) {
+                permission = permissions[permission];
+                if (page[i].includes(permission)) {
+                    const del = document.createElement("div");
+                    del.classList.add("delete");
+                    del.innerText = "-";
+                    del.addEventListener("click", () => {
+                        window.location.replace(`/delete/${page[i]}`);
+                    })
+
+                    holder.append(del);
+                    break;
+                }
+            }
 
             img.classList.add("img");
-            images.append(img);
+            holder.append(img);
+
+            images.append(holder);
         }
     }
 }

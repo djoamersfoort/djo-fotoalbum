@@ -197,6 +197,23 @@ body {
     position: relative;
 }
 
+.delete {
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    background-color: red;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 20px;
+    font-weight: bolder;
+    border-radius: 100%;
+    z-index: 1000;
+}
+
 @media (max-width: 780px) and (orientation: portrait) {
     .pictures {
         grid-template-columns: calc(100vw - 20px);
