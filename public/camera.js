@@ -3,6 +3,8 @@ const ctx = canvas.getContext("2d");
 const virtVid = document.createElement("video");
 virtVid.muted = true;
 document.body.append(virtVid);
+virtVid.setAttribute("playsinline", "");
+virtVid.setAttribute("webkit-playsinline", "");
 
 const video = document.querySelector("#camera");
 video.muted = true;
@@ -24,6 +26,8 @@ window.navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         virtVid.onloadedmetadata = (e) => {
             virtVid.play();
         }
+
+
     })
     .catch( () => {
         alert('You have give browser the permission to run Webcam and mic ;( ');
@@ -35,7 +39,7 @@ let recording = 0;
 function startRecord() {
     recording = 1;
     const ba = buttonafter;
-    mediaRecorder = new MediaRecorder(mainstream, { mimeType: 'video/webm' });
+    mediaRecorder = new MediaRecorder(mainstream, { mimeType: 'video/mp4' });
 
     mediaRecorder.addEventListener("dataavailable", function(e) {
         blobsRecorded.push(e.data);
@@ -47,7 +51,7 @@ function startRecord() {
         ba.style.height = "100%";
 
         const fd = new FormData(document.forms[0]);
-        fd.append("photo", new Blob(blobsRecorded, { type: 'video/webm' }));
+        fd.append("photo", new Blob(blobsRecorded, { type: 'video/mp4' }));
 
         let res = await fetch(`/upload/${urlParams.get("album")}`, {
             method: "POST",
