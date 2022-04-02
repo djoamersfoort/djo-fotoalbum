@@ -9,6 +9,7 @@ cam.addEventListener("click", () => {
 const pages = [];
 let photos = [];
 let pageEls = [];
+let open = false;
 
 async function get() {
     const res = await fetch(`/files/${urlParams.get("album")}`);
@@ -57,10 +58,10 @@ function openPage(page) {
             vid.preload = "metadata";
             vid.src = `/file/${page[i]}`;
             holder.addEventListener("click", e => {
-                e.preventDefault();
                 popup.style.display = "block";
                 setSrc(vid.src);
                 item = photos.indexOf(page[i]);
+                open = true;
             })
 
             vid.classList.add("img");
@@ -79,6 +80,7 @@ function openPage(page) {
                 popup.style.display = "block";
                 setSrc(img.src);
                 item = photos.indexOf(page[i]);
+                open = true;
             })
 
             img.classList.add("img");
@@ -111,6 +113,24 @@ right.addEventListener("click", () => {
 })
 close.addEventListener("click", () => {
     popup.style.display = "none";
+    open = false;
+})
+
+document.body.addEventListener("keyup", e => {
+    if (e.key === "ArrowLeft") {
+        left.click();
+    } else if (e.key === "ArrowRight") {
+        right.click();
+    } else if (e.key === "Escape") {
+        close.click();
+    }
+})
+
+const types = ["IMG", "VIDEO"];
+document.body.addEventListener("click", e => {
+    if (popup.contains(e.target) || types.includes(e.target.tagName)) return;
+    if (!open) return;
+    close.click();
 })
 
 function pageSwitch() {
