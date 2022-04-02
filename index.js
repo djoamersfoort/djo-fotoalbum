@@ -127,7 +127,7 @@ app.post("/upload/:album", upload.single("photo"), async (req, res) => {
         });
     } else if (req.file.mimetype.startsWith("image/")) {
         await sharp(req.file.path)
-            .webp({quality: 20})
+            .webp({quality: 80})
             .toFile(`${req.file.path}.webp`);
         fs.unlink(req.file.path, () => {
             fs.rename(`${req.file.path}.webp`, req.file.path, () => {
