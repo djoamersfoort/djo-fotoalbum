@@ -8,6 +8,7 @@ cam.addEventListener("click", () => {
 
 const pages = [];
 let photos = [];
+let pageEls = [];
 
 async function get() {
     const res = await fetch(`/files/${urlParams.get("album")}`);
@@ -25,6 +26,7 @@ async function get() {
         const el = document.createElement("div");
         el.classList.add("page");
         el.innerText = page + 1;
+        pageEls.push(el);
 
         el.addEventListener("click", () => {
             openPage(pages[parseInt(el.innerText) - 1]);
@@ -96,6 +98,7 @@ left.addEventListener("click", () => {
     if (item === -1) {
         item = photos.length - 1;
     }
+    pageSwitch();
     setSrc("/file/" + photos[item]);
 })
 right.addEventListener("click", () => {
@@ -103,12 +106,22 @@ right.addEventListener("click", () => {
     if (item === photos.length) {
         item = 0;
     }
+    pageSwitch();
     setSrc("/file/" + photos[item]);
 })
 close.addEventListener("click", () => {
     popup.style.display = "none";
 })
 
+function pageSwitch() {
+    const page = Math.floor((item + 1) / 9);
+    switcher.querySelectorAll(".page").forEach((el) => {
+        el.classList.remove("selected");
+    })
+    pageEls[page].classList.add("selected");
+
+    openPage(pages[page]);
+}
 const popupContent = document.querySelector("#popupContent");
 let currImage = null;
 function setSrc(src) {
