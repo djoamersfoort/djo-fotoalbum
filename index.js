@@ -117,6 +117,7 @@ app.get("/logout", (req, res) => {
 
 app.post("/upload/:album", upload.single("photo"), async (req, res) => {
     if (typeof req.session.user === "undefined") return res.json({error: 1, msg: "Invalid user!"});
+    if (!req.file) return res.json({error: 1, msg: "Invalid file!"});
     if (req.file.mimetype.startsWith("video/")) {
         exec(`ffmpeg -i "${req.file.path}" -c:v libx264 -preset veryfast -crf 22 -c:a aac -b:a 128k -strict -2 "${req.file.path}.mp4"`, (err, stdout, stderr) => {
             if (err) return console.log({error: 1, msg: err});
@@ -126,7 +127,7 @@ app.post("/upload/:album", upload.single("photo"), async (req, res) => {
                 return res.json({error: 0});
             });
         });
-    } else if (req.file.mimetype.startsWith("image/")) {
+    } else if (req.file.mimetype.startsWith("image/") && !req.file.mimetype.endsWith("svg+xml")) {
         await sharp(req.file.path)
             .webp({quality: 80})
             .toFile(`${req.file.path}.webp`);
@@ -136,6 +137,8 @@ app.post("/upload/:album", upload.single("photo"), async (req, res) => {
             });
         });
     }
+
+    return res.json({error: 0});
 })
 
 app.get("/files/:album", (req, res) => {

@@ -8,12 +8,12 @@ body {
     position: fixed;
     bottom:0;
     left:0;
-    height: 35px;
-    padding: 5px;
+    padding: 10px 0;
     background-color: #303039;
     width: 100vw;
     display: flex;
     justify-content: center;
+    gap: 30px;
 }
 .switcher {
     background-color: #303039;
@@ -48,8 +48,8 @@ body {
 
 .cam {
     border-radius: 100%;
-    width: 30px;
-    height: 35px;
+    width: 35px;
+    height: 40px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -57,8 +57,8 @@ body {
 }
 
 .cam > .icon {
-    width: 18px;
-    height: 18px;
+    width: 23px;
+    height: 23px;
     filter: invert(1);
 }
 
@@ -272,4 +272,8 @@ body {
     .left, .right, .close {
         filter: opacity(1);
     }
+}
+
+#file {
+    display: none;
 }

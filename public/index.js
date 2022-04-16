@@ -185,3 +185,18 @@ function setSrc(src) {
         currImage = img;
     }
 }
+
+const file = document.querySelector("#file");
+file.addEventListener("change", async e => {
+    const formData = new FormData();
+    formData.append("photo", file.files[0]);
+    let res = await fetch(`/upload/${urlParams.get("album")}`, {
+        method: "POST",
+        body: formData,
+    });
+
+    const body = await res.json();
+
+    if (body.error) return alert(body.msg);
+    window.location.reload();
+})
