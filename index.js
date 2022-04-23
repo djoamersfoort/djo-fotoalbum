@@ -127,6 +127,8 @@ app.post("/upload/:album", upload.single("photo"), async (req, res) => {
                 return res.json({error: 0});
             });
         });
+
+        return;
     } else if (req.file.mimetype.startsWith("image/") && !req.file.mimetype.endsWith("svg+xml")) {
         await sharp(req.file.path)
             .webp({quality: 80})
@@ -136,6 +138,8 @@ app.post("/upload/:album", upload.single("photo"), async (req, res) => {
                 return res.json({error: 0});
             });
         });
+
+        return;
     }
 
     return res.json({error: 0});
