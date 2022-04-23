@@ -6,7 +6,7 @@ async function get() {
     const pRes = await fetch("/permissions");
     const permissions = await pRes.json();
 
-    if (permissions.includes("*")) {
+    if (permissions.includes("")) {
         const add = document.querySelector(".add");
         add.addEventListener("click", () => {
             window.location.href = "/create.html";
