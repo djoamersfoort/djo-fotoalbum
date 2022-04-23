@@ -3,7 +3,16 @@ const albums = document.querySelector(".albums");
 async function get() {
     const res = await fetch(`/getAlbums`);
     const body = await res.json();
+    const pRes = await fetch("/permissions");
+    const permissions = await pRes.json();
 
+    if (permissions.includes("*")) {
+        const add = document.querySelector(".add");
+        add.addEventListener("click", () => {
+            window.location.href = "/create.html";
+        });
+        add.style.display = "flex";
+    }
     for (let i in body) {
         const album = body[i];
 

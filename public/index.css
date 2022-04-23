@@ -277,3 +277,21 @@ body {
 #file {
     display: none;
 }
+
+.add {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #303039;
+    color: white;
+    font-size: 25px;
+    font-weight: bolder;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+}

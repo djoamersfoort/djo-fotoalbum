@@ -9,8 +9,11 @@ const albums = require("./data/albums.json");
 const mime = require("mime-types");
 const { exec } = require("child_process");
 const sharp = require("sharp");
+const bodyParser = require("body-parser");
 
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: configFile.session_key,
     saveUninitialized:true,
@@ -175,6 +178,31 @@ app.get("/file/:album/:id", (req, res) => {
 });
 app.get("/getAlbums", (req, res) => {
     res.json(albums);
+})
+
+app.post("/createAlbum", (req, res) => {
+    if (typeof req.session.user === "undefined") return res.send("Not signed in!");
+    if (typeof req.body.name === "undefined") return res.send("No name given!");
+    if (typeof req.body.public === "undefined") return res.send("No public given!");
+    if (typeof req.body.description === "undefined") return res.send("No description given!");
+    if (!req.session.type.split(",").includes("begeleider")) return res.send("Not authorized!");
+
+    const dir = `${__dirname}/data/${req.body.name}`;
+    if (fs.existsSync(dir)) return res.send("Album already exists!");
+
+    fs.mkdirSync(dir);
+
+    albums.push({
+        name: req.body.name,
+        dir: dir,
+        public: req.body.public === "true",
+        description: req.body.description,
+        preview: req.body.preview
+    });
+
+    fs.writeFileSync(`${__dirname}/data/albums.json`, JSON.stringify(albums));
+
+    res.redirect("/albums");
 })
 app.get("/delete/:album/:file", (req, res) => {
     if (typeof req.session.user === "undefined") return res.send("Not signed in!");
