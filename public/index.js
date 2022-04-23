@@ -76,6 +76,21 @@ function openPage(page) {
             play.src = "/play-solid.svg";
             holder.append(play);
 
+            for (let permission in permissions) {
+                permission = permissions[permission];
+                if (page[i].includes(permission)) {
+                    const del = document.createElement("div");
+                    del.classList.add("delete");
+                    del.innerText = "-";
+                    del.addEventListener("click", () => {
+                        window.location.replace(`/delete/${page[i]}`);
+                    })
+
+                    holder.append(del);
+                    break;
+                }
+            }
+
             images.append(holder);
         } else {
             const holder = document.createElement("div");
@@ -189,7 +204,9 @@ function setSrc(src) {
 const file = document.querySelector("#file");
 file.addEventListener("change", async e => {
     const formData = new FormData();
-    formData.append("photo", file.files[0]);
+    for (let i in file.files) {
+        formData.append("photo", file.files[i]);
+    }
     let res = await fetch(`/upload/${urlParams.get("album")}`, {
         method: "POST",
         body: formData,
@@ -198,5 +215,5 @@ file.addEventListener("change", async e => {
     const body = await res.json();
 
     if (body.error) return alert(body.msg);
-    window.location.reload();
+    //window.location.reload();
 })

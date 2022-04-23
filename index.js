@@ -115,34 +115,30 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 })
 
-app.post("/upload/:album", upload.single("photo"), async (req, res) => {
+app.post("/upload/:album", upload.array("photo"), async (req, res) => {
     if (typeof req.session.user === "undefined") return res.json({error: 1, msg: "Invalid user!"});
-    if (!req.file) return res.json({error: 1, msg: "Invalid file!"});
-    if (req.file.mimetype.startsWith("video/")) {
-        exec(`ffmpeg -i "${req.file.path}" -c:v libx264 -preset veryfast -crf 22 -c:a aac -b:a 128k -strict -2 "${req.file.path}.mp4"`, (err, stdout, stderr) => {
-            if (err) return console.log({error: 1, msg: err});
+    if (!req.files) return res.json({error: 1, msg: "No files were uploaded!"});
+    for (const i in req.files) {
+        const file = req.files[i];
 
-            fs.unlink(req.file.path, () => {});
-            fs.rename(`${req.file.path}.mp4`, req.file.path, () => {
-                return res.json({error: 0});
+        if (!file) continue;
+        if (file.mimetype.startsWith("video/")) {
+            exec(`ffmpeg -i "${file.path}" -c:v libx264 -preset veryfast -crf 22 -c:a aac -b:a 128k -strict -2 "${file.path}.mp4"`, (err, stdout, stderr) => {
+                if (err) return console.log(err);
+
+                fs.unlink(file.path, () => {});
             });
-        });
-
-        return;
-    } else if (req.file.mimetype.startsWith("image/") && !req.file.mimetype.endsWith("svg+xml")) {
-        await sharp(req.file.path)
-            .webp({quality: 80})
-            .toFile(`${req.file.path}.webp`);
-        fs.unlink(req.file.path, () => {
-            fs.rename(`${req.file.path}.webp`, req.file.path, () => {
-                return res.json({error: 0});
+        } else if (file.mimetype.startsWith("image/") && !file.mimetype.endsWith("svg+xml")) {
+            await sharp(file.path)
+                .webp({quality: 80})
+                .toFile(`${file.path}.webp`);
+            fs.unlink(file.path, () => {
+                fs.rename(`${file.path}.webp`, file.path, () => {});
             });
-        });
-
-        return;
+        }
     }
 
-    return res.json({error: 0});
+    res.json({error: 0});
 })
 
 app.get("/files/:album", (req, res) => {

@@ -74,7 +74,7 @@ let recording = 0;
 function startRecord() {
     recording = 1;
     const ba = buttonafter;
-    mediaRecorder = new MediaRecorder(mainstream, { mimeType: 'video/mp4' });
+    mediaRecorder = new MediaRecorder(mainstream, { });
 
     mediaRecorder.addEventListener("dataavailable", function(e) {
         blobsRecorded.push(e.data);
@@ -86,7 +86,7 @@ function startRecord() {
         ba.style.height = "100%";
 
         const fd = new FormData(document.forms[0]);
-        fd.append("photo", new Blob(blobsRecorded, { type: 'video/mp4' }));
+        fd.append("photo", new Blob(blobsRecorded, {type: "video/webm"}));
 
         let res = await fetch(`/upload/${urlParams.get("album")}`, {
             method: "POST",
