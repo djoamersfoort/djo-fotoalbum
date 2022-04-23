@@ -202,7 +202,7 @@ app.post("/createAlbum", (req, res) => {
 
     fs.writeFileSync(`${__dirname}/data/albums.json`, JSON.stringify(albums));
 
-    res.redirect("/albums");
+    res.redirect("/");
 })
 app.get("/delete/:album/:file", (req, res) => {
     if (typeof req.session.user === "undefined") return res.send("Not signed in!");
