@@ -9,6 +9,15 @@ video {
     position: absolute;
     left: -100%;
 }
+.switch img {
+    width: 20px;
+}
+.switch {
+    filter: invert(1);
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
 .cam {
     display: block;
     width: 100vw;
@@ -96,6 +105,10 @@ video {
         flex-direction: column;
         gap: 10px;
         text-align: center;
+    }
+    .switch {
+        position: unset;
+        margin-bottom: 10px;
     }
 }
 

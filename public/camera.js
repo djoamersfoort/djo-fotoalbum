@@ -12,26 +12,61 @@ const button = document.querySelector("#button");
 const buttonafter = document.querySelector("#buttonafter");
 const photobtn = document.querySelector("#photo");
 const videobtn = document.querySelector("#video");
+const switchBtn = document.getElementById("switch");
 let mainstream;
 const urlParams = new URLSearchParams(window.location.search);
 
-window.navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(stream => {
-        mainstream = stream;
-        virtVid.srcObject = stream;
-        video.srcObject = stream;
-        video.onloadedmetadata = (e) => {
-            video.play();
-        };
-        virtVid.onloadedmetadata = (e) => {
-            virtVid.play();
+let videos;
+(async () => {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    videos = devices.filter(device => {
+        return device.kind === "videoinput";
+    });
+
+    if (videos.length < 2) {
+        switchBtn.style.filter = "invert(1) opacity(.5)";
+        switchBtn.style.cursor = "not-allowed";
+    }
+
+    let current = 0;
+    switchBtn.addEventListener("click", () => {
+        current++;
+        if (current === videos.length) {
+            current = 0;
         }
 
-
+        capture(videos[current].deviceId);
     })
-    .catch( () => {
-        alert('You have give browser the permission to run Webcam and mic ;( ');
-    });
+    capture(videos[0].deviceId);
+})();
+
+function capture(deviceId) {
+    window.navigator.mediaDevices.getUserMedia({video: {deviceId}, audio: true})
+        .then(async stream => {
+            mainstream = stream;
+            virtVid.srcObject = stream;
+            video.srcObject = stream;
+            video.onloadedmetadata = (e) => {
+                video.play();
+            };
+            virtVid.onloadedmetadata = (e) => {
+                virtVid.play();
+            }
+
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            videos = devices.filter(device => {
+                return device.kind === "videoinput";
+            });
+
+            if (videos.length > 1) {
+                switchBtn.style.filter = "invert(1)";
+                switchBtn.style.cursor = "pointer";
+            }
+        })
+        .catch(() => {
+            alert('You have give browser the permission to run Webcam and mic ;( ');
+        });
+}
 
 let blobsRecorded = [];
 let mediaRecorder;
