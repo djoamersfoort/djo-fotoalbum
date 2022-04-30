@@ -134,7 +134,10 @@ app.post("/upload/:album", upload.array("photo"), async (req, res) => {
         } else if (file.mimetype.startsWith("image/") && !file.mimetype.endsWith("svg+xml")) {
             await sharp(file.path)
                 .webp({quality: 80})
-                .toFile(`${file.path}.webp`);
+                .toFile(`${file.path}.webp`)
+                .catch(err => {
+                    console.log(err);
+                });
             fs.unlink(file.path, () => {
                 fs.rename(`${file.path}.webp`, file.path, () => {});
             });
