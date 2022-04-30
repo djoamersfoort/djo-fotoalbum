@@ -193,7 +193,7 @@ app.post("/createAlbum", (req, res) => {
     const dir = `data/${req.body.name}`;
     if (fs.existsSync(dir)) return res.send("Album already exists!");
 
-    fs.mkdirSync(__dirname + dir);
+    fs.mkdirSync(__dirname + "/" + dir);
 
     albums.push({
         name: req.body.name,
