@@ -132,15 +132,17 @@ app.post("/upload/:album", upload.array("photo"), async (req, res) => {
                 fs.unlink(file.path, () => {});
             });
         } else if (file.mimetype.startsWith("image/") && !file.mimetype.endsWith("svg+xml")) {
-            await sharp(file.path)
+            sharp(file.path)
                 .webp({quality: 80})
                 .toFile(`${file.path}.webp`)
+                .then(info => {
+                    fs.unlink(file.path, () => {
+                        fs.rename(`${file.path}.webp`, file.path, () => {});
+                    });
+                })
                 .catch(err => {
                     console.log(err);
                 });
-            fs.unlink(file.path, () => {
-                fs.rename(`${file.path}.webp`, file.path, () => {});
-            });
         }
     }
 
