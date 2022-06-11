@@ -219,6 +219,17 @@ app.get("/delete/:album/:file", (req, res) => {
         res.redirect(`/album?album=${req.params.album}`);
     });
 })
+app.get("/setPreview/:album/:file", (req, res) => {
+    if (typeof req.session.user === "undefined") return res.send("Not signed in!");
+    if (typeof albums[req.params.album] === "undefined") return res.send("Album not found!");
+    if (!fs.existsSync(`${__dirname}/${albums[req.params.album].dir}/${req.params.file}`)) return res.send("File not found!");
+    if (!req.session.type.split(",").includes("begeleider")) return res.send("You can't set this file as preview!");
+
+    albums[req.params.album].preview = `/file/${req.params.album}/${req.params.file}`;
+    fs.writeFileSync(`${__dirname}/data/albums.json`, JSON.stringify(albums));
+
+    res.redirect(`/album?album=${req.params.album}`);
+});
 app.get("/permissions", (req, res) => {
     if (typeof req.session.user === "undefined") return res.send("Not signed in!");
 

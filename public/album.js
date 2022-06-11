@@ -6,6 +6,7 @@ const nextBtn = document.getElementById('next');
 const closeBtn = document.getElementById('close');
 const date = document.getElementById('date');
 const icons = document.getElementById('icons');
+const star = document.getElementById('star');
 const camera = document.getElementById('camera');
 const file = document.querySelector("#file");
 const deleteBtn = document.getElementById('delete');
@@ -64,6 +65,11 @@ const order = () => {
 
 const pRes = await fetch("/permissions");
 const permissions = await pRes.json();
+if (permissions.includes("*")) {
+    star.style.display = "block";
+} else {
+    star.style.display = "none";
+}
 
 const createImg = (file) => {
     const img = document.createElement("img");
@@ -209,6 +215,9 @@ file.addEventListener("change", async e => {
 
 deleteBtn.addEventListener("click", () => {
     window.location.replace(`/delete/${files[open]}`);
+});
+star.addEventListener("click", () => {
+    window.location.replace(`/setPreview/${files[open]}`);
 });
 
 window.addEventListener("resize", order);
