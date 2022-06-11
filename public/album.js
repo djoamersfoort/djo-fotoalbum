@@ -137,7 +137,7 @@ const setMeta = () => {
     const imgDate = new Date(parseInt(files[open].split("/")[1].split("-")[0]));
     date.innerText = `${imgDate.getDate()} ${months[imgDate.getMonth()]}, ${imgDate.getFullYear()}`;
 
-    if (permissions.includes(files[open].split("-")[1].split(".")[0]) || permissions.includes("*")) {
+    if (permissions.includes(files[open].split("-")[1].split(".")[0]) || permissions.includes("")) {
         deleteBtn.style.display = "block";
     } else {
         deleteBtn.style.display = "none";
@@ -218,7 +218,7 @@ window.addEventListener("resize", order);
 
 const pRes = await fetch("/permissions");
 permissions = await pRes.json();
-if (permissions.includes("*")) {
+if (permissions.includes("")) {
     star.style.display = "block";
 } else {
     star.style.display = "none";

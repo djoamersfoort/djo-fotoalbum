@@ -53,7 +53,7 @@ window.addEventListener("resize", getColumns);
 const pRes = await fetch("/permissions");
 const permissions = await pRes.json();
 
-if (!permissions.includes("*")) {
+if (!permissions.includes("")) {
     add.style.display = "none";
 }
 
