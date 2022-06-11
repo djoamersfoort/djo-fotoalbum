@@ -7,28 +7,30 @@
     <script defer src="create.js" type="module"></script>
   </head>
   <body>
-    <div class="preview">
-        <div class="tile">
-            <div class="meta">
-                <h2 id="titlePreview"></h2>
-                <p id="descriptionPreview"></p>
+    <div class="container">
+        <div class="preview">
+            <div class="tile">
+                <div class="meta">
+                    <h2 id="titlePreview"></h2>
+                    <p id="descriptionPreview"></p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form">
-        <form action="/createAlbum" method="post">
-            <label for="name">Name</label>
-            <input autofocus autocomplete="off" type="text" name="name" id="name">
-            <label for="public">Public</label>
-            <select name="public" id="public">
-                <option value="false">Private</option>
-                <option value="true">Public</option>
-            </select>
-            <label for="description">Description</label>
-            <input autocomplete="off" type="text" id="description" name="description">
-            <label for="preview" class="hidden"></label><input class="hidden" type="text" id="preview" name="preview" value="">
-            <input type="submit" value="Create">
-        </form>
+        <div class="form">
+            <form action="/createAlbum" method="post">
+                <label for="name">Name</label>
+                <input autofocus autocomplete="off" type="text" name="name" id="name">
+                <label for="public">Public</label>
+                <select name="public" id="public">
+                    <option value="false">Private</option>
+                    <option value="true">Public</option>
+                </select>
+                <label for="description">Description</label>
+                <input autocomplete="off" type="text" id="description" name="description">
+                <label for="preview" class="hidden"></label><input class="hidden" type="text" id="preview" name="preview" value="">
+                <input type="submit" value="Create">
+            </form>
+        </div>
     </div>
   </body>
 </html>
