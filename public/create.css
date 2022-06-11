@@ -1,0 +1,75 @@
+body,html {
+    display: flex;
+    background-color: #22222c;
+    font-family: sans-serif;
+    align-items: center;
+    height: 100%;
+    color: #fff;
+    width: 100%;
+    gap: 20px;
+}
+.hidden {
+    display: none;
+}
+
+.preview {
+    flex: 1;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+.form {
+    flex: 1;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+.form form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.tile {
+    position: relative;
+    background-color: #303039;
+    width: 400px;
+    height: 225px;
+}
+.tile .meta {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 7px;
+    background-color: rgba(0, 0, 0, 0.69);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.tile .meta h2 {
+    margin: 0;
+    font-size: 1.2em;
+}
+.tile .meta p {
+    margin: 0;
+    font-size: 0.8em;
+}
+
+input, select {
+    background-color: #303039;
+    color: #fff;
+    border: none;
+    outline: 0;
+    padding: 5px;
+    font-size: 1.2em;
+    width: 250px;
+}
+input[type="text"] {
+    width: 240px;
+}
+
+input:focus, select:focus {
+    box-shadow: #ffffff20 0 0 0 1px;
+}
