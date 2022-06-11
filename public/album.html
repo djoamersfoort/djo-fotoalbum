@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="index.css">
-    <script defer src="index.js"></script>
+    <script defer src="album.js" type="module"></script>
+    <link rel="stylesheet" href="album.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-</head>
-<body>
-    <div class="switcher" id="switcher">
+  </head>
+  <body>
+    <div class="columns" id="columns">
+      <div class="column"></div>
+      <div class="column"></div>
+      <div class="column"></div>
+      <div class="column"></div>
     </div>
-    <div class="pictures"></div>
-    <div class="popup">
-        <div class="content" id="popupContent">
-            <div class="left">&#60;</div>
-            <div class="right">&#62;</div>
-            <div class="close">X</div>
+    <div id="icons" class="addIcons">
+      <input type="file" name="" id="file" multiple class="hidden">
+      <i id="camera" class="add addCamera fa-solid fa-camera"></i>
+      <label for="file"><i id="upload" class="add addUpload fa-solid fa-upload"></i></label>
+    </div>
+    <div class="modalContainer" id="modal">
+      <div class="modal">
+        <div class="bar">
+          <div class="date" id="date">2022</div>
+          <div class="icons">
+            <i id="delete" class="icon danger fa-solid fa-trash"></i>
+            <i class="icon fa-solid fa-arrow-left" id="back"></i>
+            <i class="icon fa-solid fa-arrow-right" id="next"></i>
+            <i class="icon fa-solid fa-xmark" id="close"></i>
+          </div>
         </div>
-
+        <img id="preview" alt="">
+      </div>
     </div>
-    
-    <div class="bar">
-        <div id="cam" class="cam">
-            <img class=icon src="camera-solid.svg">
-            <p>Camera</p>
-        </div>
-        <input type="file" name="" id="file" multiple>
-        <label for="file" id="upload" class="cam">
-            <img src="upload-solid.svg" alt="" class="icon">
-            <p>Upload</p>
-        </label>
-    </div>
-</body>
+  </body>
 </html>

@@ -1,0 +1,119 @@
+body {
+    margin: 5px;
+    background-color: #22222c;
+    font-family: sans-serif;
+}
+.hidden {
+    display: none;
+}
+
+.columns {
+    display: flex;
+    width: 100%;
+    gap: 5px;
+}
+
+.column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.container {
+    position: relative;
+}
+.img {
+    /* Code for lazy loading, do not remove! */
+    width: 100%;
+    min-height: 20vw;
+
+    cursor: pointer;
+}
+.play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    filter: invert(1);
+    transition: .3s ease;
+}
+.container:hover .play {
+    width: 60px;
+}
+
+.addIcons {
+    display: flex;
+    gap: 5px;
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+}
+.add {
+    font-size: 25px;
+    color: #fff;
+    background-color: #303039;
+    border-radius: 50%;
+    width: 1.5em;
+    height: 1.5em;
+    text-align: center;
+    transition: .3s ease;
+    cursor: pointer;
+}
+.add:before {
+    line-height: 1.5em;
+}
+
+.modalContainer {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+.modal {
+    background-color: #303039;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    color: #fff;
+    gap: 2px;
+}
+.modal .bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal .bar .icons {
+    display: flex;
+    gap: 3px;
+}
+.modal .bar .icons .icon {
+    font-size: 15px;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 2px;
+    padding: 2px 5px;
+    border: 1px solid #ffffff20;
+}
+.modal .bar .icons .danger {
+    background-color: salmon;
+    font-size: 12px;
+    line-height: 1.2em;
+}
+
+.modal img {
+    max-height: 80vh;
+    max-width: 80vw;
+}
+
+@media (orientation: portrait) {
+    .addIcons {
+        flex-direction: column;
+    }
+}
