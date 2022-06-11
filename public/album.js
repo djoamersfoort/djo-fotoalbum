@@ -63,13 +63,7 @@ const order = () => {
     }
 }
 
-const pRes = await fetch("/permissions");
-const permissions = await pRes.json();
-if (permissions.includes("*")) {
-    star.style.display = "block";
-} else {
-    star.style.display = "none";
-}
+let permissions = [];
 
 const createImg = (file) => {
     const img = document.createElement("img");
@@ -221,3 +215,11 @@ star.addEventListener("click", () => {
 });
 
 window.addEventListener("resize", order);
+
+const pRes = await fetch("/permissions");
+permissions = await pRes.json();
+if (permissions.includes("*")) {
+    star.style.display = "block";
+} else {
+    star.style.display = "none";
+}
