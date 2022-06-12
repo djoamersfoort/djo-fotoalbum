@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: configFile.session_key,
     saveUninitialized:true,
-    cookie: { maxAge: 24 * 60 * 60 * 10000 },
+    cookie: { maxAge: 7 * 24 * 3600 * 1000 }, // 7 Days (in milliseconds)
     resave: false
 }))
 const client = new AuthorizationCode(configFile.oauth);
