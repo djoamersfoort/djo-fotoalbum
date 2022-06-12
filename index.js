@@ -133,6 +133,7 @@ app.post("/upload/:album", upload.array("photo"), async (req, res) => {
             });
         } else if (file.mimetype.startsWith("image/") && !file.mimetype.endsWith("svg+xml")) {
             sharp(file.path)
+                .rotate()
                 .webp({quality: 80})
                 .toFile(`${file.path}.webp`)
                 .then(info => {
