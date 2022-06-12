@@ -154,3 +154,36 @@ body {
 .check i:before {
     line-height: 1.5em;
 }
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    align-items: center;
+    background-color: #303039;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    transform: translateY(100%);
+    transition: .3s ease;
+}
+.action {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    cursor: pointer;
+    transition: .3s ease;
+}
+.action p {
+    margin: 0;
+}
+.actionDanger {
+    color: salmon;
+}
+.disabled {
+    color: white;
+    cursor: not-allowed;
+    filter: opacity(0.8);
+}

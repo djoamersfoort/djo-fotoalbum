@@ -219,6 +219,26 @@ app.get("/delete/:album/:file", (req, res) => {
         res.redirect(`/album?album=${req.params.album}`);
     });
 })
+app.post("/bulkDelete", (req, res) => {
+    if (typeof req.session.user === "undefined") return res.send("Not signed in!");
+    if (typeof req.body.files === "undefined") return res.send("No files given!");
+    if (!Array.isArray(req.body.files)) return res.send("Files must be an array!");
+
+    for (const i in req.body.files) {
+        const file = req.body.files[i];
+        const album = file.split("/")[0];
+        const fileName = file.split("/")[1];
+
+        if (typeof albums[album] === "undefined") continue;
+        if (!fs.existsSync(`${__dirname}/${albums[album].dir}/${fileName}`)) continue;
+        if (!fileName.includes(`user${req.session.user}`) && !req.session.type.split(",").includes("begeleider")) continue;
+
+        fs.unlink(`${albums[album].dir}/${fileName}`, () => {});
+    }
+
+    res.json({error: 0});
+})
+
 app.get("/setPreview/:album/:file", (req, res) => {
     if (typeof req.session.user === "undefined") return res.send("Not signed in!");
     if (typeof albums[req.params.album] === "undefined") return res.send("Album not found!");

@@ -10,6 +10,8 @@ const star = document.getElementById('star');
 const camera = document.getElementById('camera');
 const file = document.querySelector("#file");
 const deleteBtn = document.getElementById('delete');
+const bulkDelete = document.getElementById("bulkDelete");
+const actions = document.getElementById("actions");
 
 const months = [
     "January",
@@ -66,6 +68,20 @@ const order = () => {
 let permissions = [];
 
 let checked = [];
+bulkDelete.addEventListener("click", async () => {
+    if (bulkDelete.classList.contains("disabled")) return;
+    const res = await fetch("/bulkDelete", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({files: checked, album: urlParams.get("album")})
+    });
+    const body = await res.text();
+
+    window.location.reload();
+});
+
 const checkBox = (container, file) => {
     const check = document.createElement("div");
     check.classList.add("check");
@@ -80,11 +96,35 @@ const checkBox = (container, file) => {
             check.classList.remove("checked");
             checked.splice(checked.indexOf(file), 1);
             container.classList.remove("selected");
+
+            if (bulkDelete.classList.contains("disabled")) {
+                let amount = 0;
+
+                for (const i in checked) {
+                    if (!permissions.includes(checked[i].split("-")[1].split(".")[0]) && !permissions.includes("")) {
+                        amount++;
+                    }
+                }
+
+                if (amount === 0) {
+                    bulkDelete.classList.remove("disabled");
+                }
+            }
         } else {
             isChecked = true;
             check.classList.add("checked");
             checked.push(file);
             container.classList.add("selected");
+
+            if (!permissions.includes(file.split("-")[1].split(".")[0]) && !permissions.includes("")) {
+                bulkDelete.classList.add("disabled");
+            }
+        }
+
+        if (checked.length > 0) {
+            actions.style.transform = "translateY(0)";
+        } else {
+            actions.style.transform = "translateY(100%)";
         }
     }
     check.addEventListener("click", () => {
