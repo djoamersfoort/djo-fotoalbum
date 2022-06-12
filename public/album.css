@@ -1,5 +1,5 @@
 body {
-    margin: 5px;
+    margin: 0;
     background-color: #22222c;
     font-family: sans-serif;
 }
@@ -9,8 +9,9 @@ body {
 
 .columns {
     display: flex;
-    width: 100%;
+    width: calc(100% - 10px);
     gap: 5px;
+    margin: 5px;
 }
 
 .column {
@@ -186,4 +187,17 @@ body {
     color: white;
     cursor: not-allowed;
     filter: opacity(0.8);
+}
+
+.menu {
+    display: flex;
+    padding: 5px;
+    background-color: #303039;
+    color: #fff;
+}
+.menu .title {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-decoration: none;
+    color: #fff;
 }
