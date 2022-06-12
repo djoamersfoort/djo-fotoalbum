@@ -153,15 +153,16 @@ const createVideo = (file) => {
     const play = document.createElement("img");
     play.src = "/play-solid.svg";
     play.classList.add("play");
-    container.append(play);
 
     container.addEventListener("click", () => {
+        if (checked.length > 0) return;
         openModal();
         switchSrc(file);
 
         setMeta();
     });
 
+    container.append(play, checkBox(container, file));
     images.push(container);
 }
 
