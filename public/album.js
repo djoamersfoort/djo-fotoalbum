@@ -65,7 +65,44 @@ const order = () => {
 
 let permissions = [];
 
+let checked = [];
+const checkBox = (container, file) => {
+    const check = document.createElement("div");
+    check.classList.add("check");
+    const i = document.createElement("i");
+    i.classList.add("fa-solid", "fa-check");
+    check.append(i);
+    let isChecked = false;
+
+    const toggle = () => {
+        if (isChecked) {
+            isChecked = false;
+            check.classList.remove("checked");
+            checked.splice(checked.indexOf(file), 1);
+            container.classList.remove("selected");
+        } else {
+            isChecked = true;
+            check.classList.add("checked");
+            checked.push(file);
+            container.classList.add("selected");
+        }
+    }
+    check.addEventListener("click", () => {
+        toggle()
+    });
+    container.addEventListener("click", (e) => {
+        if (checked.length > 0 && e.target !== check) {
+            toggle();
+        }
+    });
+
+    return check;
+}
+
 const createImg = (file) => {
+    const container = document.createElement("div");
+    container.classList.add("container");
+
     const img = document.createElement("img");
 
     img.classList.add("img");
@@ -73,13 +110,15 @@ const createImg = (file) => {
     img.src = `/file/${file}`;
 
     img.addEventListener("click", () => {
+        if (checked.length > 0) return;
         openModal();
         switchSrc(file);
 
         setMeta();
     });
 
-    images.push(img);
+    container.append(img, checkBox(container, file));
+    images.push(container);
 }
 const switchSrc = (file) => {
     open = files.indexOf(file);

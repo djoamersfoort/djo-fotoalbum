@@ -22,6 +22,10 @@ body {
 
 .container {
     position: relative;
+    transition: .3s ease;
+}
+.selected {
+    transform: scale(0.95);
 }
 .img {
     /* Code for lazy loading, do not remove! */
@@ -121,4 +125,32 @@ body {
     .addIcons {
         flex-direction: column;
     }
+}
+
+.check {
+    font-size: 13px;
+    color: #fff;
+    background-color: #303039;
+    border-radius: 50%;
+    width: 1.5em;
+    height: 1.5em;
+    text-align: center;
+    transition: .3s ease;
+    cursor: pointer;
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.check i {
+    display: none;
+}
+.checked {
+    background-color: dodgerblue;
+}
+.checked i {
+    display: block;
+}
+.check i:before {
+    line-height: 1.5em;
 }
