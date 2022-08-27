@@ -6,7 +6,6 @@ const axios = require("axios");
 const multer = require("multer");
 const fs = require("fs");
 let albums = require("./data/albums.json");
-const mime = require("mime-types");
 const { exec } = require("child_process");
 const sharp = require("sharp");
 const { v4: uuid } = require("uuid");
