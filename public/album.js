@@ -29,8 +29,9 @@ const months = [
 ]
 
 const urlParams = new URLSearchParams(window.location.search);
+const album = urlParams.get("album");
 
-const res = await fetch(`/files/${urlParams.get("album")}`);
+const res = await fetch(`/files/${album}`);
 const files = await res.json();
 
 const images = [];
@@ -75,7 +76,7 @@ bulkDelete.addEventListener("click", async () => {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({files: checked, album: urlParams.get("album")})
+        body: JSON.stringify({files: checked.map(file => file.id), album})
     });
     const body = await res.text();
 
@@ -101,7 +102,7 @@ const checkBox = (container, file) => {
                 let amount = 0;
 
                 for (const i in checked) {
-                    if (!permissions.includes(checked[i].split("-")[1].split(".")[0]) && !permissions.includes("")) {
+                    if (!permissions.includes(checked[i].user) && !permissions.includes("")) {
                         amount++;
                     }
                 }
@@ -116,7 +117,7 @@ const checkBox = (container, file) => {
             checked.push(file);
             container.classList.add("selected");
 
-            if (!permissions.includes(file.split("-")[1].split(".")[0]) && !permissions.includes("")) {
+            if (!permissions.includes(file.user) && !permissions.includes("")) {
                 bulkDelete.classList.add("disabled");
             }
         }
@@ -147,7 +148,8 @@ const createImg = (file) => {
 
     img.classList.add("img");
     img.loading = "lazy";
-    img.src = `/file/${file}`;
+    img.src = `/file/${album}/${file.id}`;
+    img.style.aspectRatio = `${file.meta.width} / ${file.meta.height}`;
 
     img.addEventListener("click", () => {
         if (checked.length > 0) return;
@@ -162,10 +164,10 @@ const createImg = (file) => {
 }
 const switchSrc = (file) => {
     open = files.indexOf(file);
-    if (file.endsWith(".mp4")) {
+    if (file.type === "video") {
         const newPreview = document.createElement("video");
 
-        newPreview.src = `/file/${file}`;
+        newPreview.src = `/file/${album}/${file.id}`;
         newPreview.controls = true;
         newPreview.autoplay = true;
         preview.parentNode.replaceChild(newPreview, preview);
@@ -175,7 +177,7 @@ const switchSrc = (file) => {
 
     const newPreview = document.createElement("img");
 
-    newPreview.src = `/file/${file}`;
+    newPreview.src = `/file/${album}/${file.id}`;
     preview.parentNode.replaceChild(newPreview, preview);
     preview = newPreview;
 }
@@ -186,7 +188,7 @@ const createVideo = (file) => {
     const video = document.createElement("video");
     video.preload = "metadata";
     video.controls = false;
-    video.src = `/file/${file}`;
+    video.src = `/file/${album}/${file.id}`;
     video.classList.add("img");
     container.append(video);
 
@@ -208,16 +210,16 @@ const createVideo = (file) => {
 
 let open;
 for (const file of files) {
-    if (file.endsWith(".mp4")) createVideo(file)
+    if (file.type === "video") createVideo(file)
     else createImg(file);
 }
 order();
 
 const setMeta = () => {
-    const imgDate = new Date(parseInt(files[open].split("/")[1].split("-")[0]));
+    const imgDate = new Date(files[open].date);
     date.innerText = `${imgDate.getDate()} ${months[imgDate.getMonth()]}, ${imgDate.getFullYear()}`;
 
-    if (permissions.includes(files[open].split("-")[1].split(".")[0]) || permissions.includes("")) {
+    if (permissions.includes(files[open].user) || permissions.includes("")) {
         deleteBtn.style.display = "block";
     } else {
         deleteBtn.style.display = "none";
@@ -269,14 +271,14 @@ document.body.addEventListener("keydown", (e) => {
 })
 
 camera.addEventListener("click", () => {
-    window.location.assign(`/camera?album=${urlParams.get("album")}`);
+    window.location.assign(`/camera?album=${album}`);
 });
 file.addEventListener("change", async e => {
     const formData = new FormData();
     for (let i in file.files) {
         formData.append("photo", file.files[i]);
     }
-    let res = await fetch(`/upload/${urlParams.get("album")}`, {
+    let res = await fetch(`/upload/${album}`, {
         method: "POST",
         body: formData,
     });
@@ -288,10 +290,10 @@ file.addEventListener("change", async e => {
 })
 
 deleteBtn.addEventListener("click", () => {
-    window.location.replace(`/delete/${files[open]}`);
+    window.location.replace(`/delete/${album}/${files[open].id}`);
 });
 star.addEventListener("click", () => {
-    window.location.replace(`/setPreview/${files[open]}`);
+    window.location.replace(`/setPreview/${album}/${files[open].id}`);
 });
 
 window.addEventListener("resize", order);

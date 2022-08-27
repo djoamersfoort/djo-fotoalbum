@@ -12,7 +12,7 @@ for (const i in albumsJson) {
     let background;
     if (album.preview) {
         background = document.createElement("img");
-        background.src = album.preview;
+        background.src = `/file/${i}/${album.preview}`;
         background.classList.add("background");
     } else {
         background = document.createElement("div");

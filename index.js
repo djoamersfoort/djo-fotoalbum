@@ -1,15 +1,25 @@
 const express = require("express");
 const session = require("express-session");
-const configFile = require("./data/config.json");
+let configFile = require("./data/config.json");
 const { AuthorizationCode } = require("simple-oauth2");
 const axios = require("axios");
 const multer = require("multer");
 const fs = require("fs");
-const albums = require("./data/albums.json");
+let albums = require("./data/albums.json");
 const mime = require("mime-types");
 const { exec } = require("child_process");
 const sharp = require("sharp");
+const { v4: uuid } = require("uuid");
 const bodyParser = require("body-parser");
+const ffmpeg = require("fluent-ffmpeg");
+const sizeOf = require("image-size");
+
+if (!configFile.lastVersion) {
+    console.log("Starting migration to version 2022.8.27.1")
+    require("./migrate");
+    configfile = require("./data/config.json");
+    albums = require("./data/albums.json");
+}
 
 const app = express();
 app.use(bodyParser.json());
@@ -23,10 +33,10 @@ app.use(session({
 const client = new AuthorizationCode(configFile.oauth);
 const multerStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, albums[req.params.album].dir);
+        cb(null, "data/files");
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-user${req.session.user}.${mime.extension(file.mimetype)}`);
+        cb(null, `${uuid()}`);
     },
 });
 const upload = multer({
@@ -118,6 +128,14 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 })
 
+const getMetaData = async (file) => {
+    return new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(file, (err, metadata) => {
+            if (err) return reject(err)
+            resolve(metadata)
+        })
+    })
+}
 app.post("/upload/:album", upload.array("photo"), async (req, res) => {
     if (typeof req.session.user === "undefined") return res.json({error: 1, msg: "Invalid user!"});
     if (!req.files) return res.json({error: 1, msg: "No files were uploaded!"});
@@ -126,10 +144,26 @@ app.post("/upload/:album", upload.array("photo"), async (req, res) => {
 
         if (!file) continue;
         if (file.mimetype.startsWith("video/")) {
-            exec(`ffmpeg -i "${file.path}" -c:v libx264 -preset veryfast -crf 22 -c:a aac -b:a 128k -strict -2 "${file.path}.mp4"`, (err, stdout, stderr) => {
+            exec(`ffmpeg -i "${file.path}" -c:v libx264 -preset veryfast -crf 22 -c:a aac -b:a 128k -strict -2 "${file.path}.mp4"`, async (err, stdout, stderr) => {
                 if (err) return console.log(err);
 
-                fs.unlink(file.path, () => {});
+                fs.unlink(file.path, async () => {
+                    fs.rename(`${file.path}.mp4`, file.path, () => {});
+
+                    const res = await getMetaData(file.path);
+                    albums[req.params.album].files.push({
+                        id: file.path.split("/")[2],
+                        date: new Date().getTime(),
+                        user: req.session.user,
+                        meta: {
+                            width: res.streams[0].width,
+                            height: res.streams[0].height,
+                            duration: res.streams[0].duration,
+                        },
+                        type: "video"
+                    })
+                    fs.writeFileSync("data/albums.json", JSON.stringify(albums));
+                });
             });
         } else if (file.mimetype.startsWith("image/") && !file.mimetype.endsWith("svg+xml")) {
             sharp(file.path)
@@ -139,6 +173,15 @@ app.post("/upload/:album", upload.array("photo"), async (req, res) => {
                 .then(info => {
                     fs.unlink(file.path, () => {
                         fs.rename(`${file.path}.webp`, file.path, () => {});
+
+                        albums[req.params.album].files.push({
+                            id: file.path.split("/")[2],
+                            date: new Date().getTime(),
+                            user: req.session.user,
+                            meta: sizeOf(file.path),
+                            type: "image"
+                        })
+                        fs.writeFileSync("data/albums.json", JSON.stringify(albums))
                     });
                 })
                 .catch(err => {
@@ -154,33 +197,19 @@ app.get("/files/:album", (req, res) => {
     if (typeof albums[req.params.album] === "undefined") return res.send("Album not found!");
     if (typeof req.session.user === "undefined" && !albums[parseInt(req.params.album)].public) return res.json([]);
 
-    const dir = albums[req.params.album].dir;
-    fs.readdir(dir, function(err, files){
-        files = files.map(function (fileName) {
-            return {
-                name: `${req.params.album}/${fileName}`,
-                time: fs.statSync(dir + '/' + fileName).mtime.getTime()
-            };
-        })
-            .sort(function (a, b) {
-                if (parseInt(a.name.match(/\d+/gm)[1]) > parseInt(b.name.match(/\d+/gm)[1])) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            })
-            .map(function (v) {
-                return v.name; });
-
-        res.json(files);
-    });
+    const files = albums[req.params.album].files.sort((a, b) => {
+        if (a.date > b.date) return -1;
+        return 1;
+    })
+    res.json(files);
 });
 app.get("/file/:album/:id", (req, res) => {
     if (typeof albums[req.params.album] === "undefined") return res.send("Album not found!");
     if (typeof req.session.user === "undefined" && !albums[parseInt(req.params.album)].public) return res.send("Not signed in!");
+    const filter = albums[req.params.album].files.filter(file => file.id === req.params.id);
+    if (filter.length === 0) return res.send("File not in album!");
 
-
-    res.sendFile(`${__dirname}/${albums[req.params.album].dir}/${req.params.id}`);
+    res.sendFile(`${__dirname}/data/files/${req.params.id}`);
 });
 app.get("/getAlbums", (req, res) => {
     res.json(albums);
@@ -205,20 +234,24 @@ app.post("/createAlbum", (req, res) => {
         description: req.body.description,
         preview: req.body.preview
     });
+    fs.writeFileSync("data/albums.json", JSON.stringify(albums));
 
     fs.writeFileSync(`${__dirname}/data/albums.json`, JSON.stringify(albums));
 
     res.redirect("/");
 })
-app.get("/delete/:album/:file", (req, res) => {
+app.get("/delete/:album/:id", (req, res) => {
     if (typeof req.session.user === "undefined") return res.send("Not signed in!");
     if (typeof albums[req.params.album] === "undefined") return res.send("Album not found!");
-    if (!fs.existsSync(`${__dirname}/${albums[req.params.album].dir}/${req.params.file}`)) return res.send("File not found!");
-    if (!req.params.file.includes(`user${req.session.user}`) && !req.session.type.split(",").includes("begeleider")) return res.send("You can't delete this file!");
+    const filter = albums[req.params.album].files.filter(file => file.id === req.params.id);
+    if (filter.length === 0) return res.send("File not in album!");
+    if (filter[0].user !== req.session.user && !req.session.type.split(",").includes("begeleider")) return res.send("Incorrect permissions!");
 
-    fs.unlink(`${albums[req.params.album].dir}/${req.params.file}`, () => {
+    albums[req.params.album].files.splice(albums[req.params.album].files.indexOf(filter[0]), 1);
+    fs.unlink(`./data/files/${req.params.id}`, () => {
         res.redirect(`/album?album=${req.params.album}`);
     });
+    fs.writeFileSync("data/albums.json", JSON.stringify(albums));
 })
 app.post("/bulkDelete", (req, res) => {
     if (typeof req.session.user === "undefined") return res.send("Not signed in!");
@@ -227,26 +260,27 @@ app.post("/bulkDelete", (req, res) => {
 
     for (const i in req.body.files) {
         const file = req.body.files[i];
-        const album = file.split("/")[0];
-        const fileName = file.split("/")[1];
 
-        if (typeof albums[album] === "undefined") continue;
-        if (!fs.existsSync(`${__dirname}/${albums[album].dir}/${fileName}`)) continue;
-        if (!fileName.includes(`user${req.session.user}`) && !req.session.type.split(",").includes("begeleider")) continue;
+        if (typeof albums[req.body.album] === "undefined") continue;
+        const filter = albums[req.body.album].files.filter(a => a.id === file);
+        if (filter.length === 0) continue;
+        if (filter[0].user !== req.session.user && !req.session.type.split(",").includes("begeleider")) continue;
 
-        fs.unlink(`${albums[album].dir}/${fileName}`, () => {});
+        albums[req.body.album].files.splice(albums[req.body.album].files.indexOf(filter[0]), 1);
+        fs.unlink(`./data/files/${file}`, () => {});
     }
 
+    fs.writeFileSync("data/albums.json", JSON.stringify(albums));
     res.json({error: 0});
 })
 
 app.get("/setPreview/:album/:file", (req, res) => {
     if (typeof req.session.user === "undefined") return res.send("Not signed in!");
     if (typeof albums[req.params.album] === "undefined") return res.send("Album not found!");
-    if (!fs.existsSync(`${__dirname}/${albums[req.params.album].dir}/${req.params.file}`)) return res.send("File not found!");
+    if (!fs.existsSync(`data/files/${req.params.file}`)) return res.send("File not found!");
     if (!req.session.type.split(",").includes("begeleider")) return res.send("You can't set this file as preview!");
 
-    albums[req.params.album].preview = `/file/${req.params.album}/${req.params.file}`;
+    albums[req.params.album].preview = req.params.file;
     fs.writeFileSync(`${__dirname}/data/albums.json`, JSON.stringify(albums));
 
     res.redirect(`/album?album=${req.params.album}`);
@@ -255,7 +289,7 @@ app.get("/permissions", (req, res) => {
     if (typeof req.session.user === "undefined") return res.send("Not signed in!");
 
     return res.json([
-        req.session.type.split(",").includes("begeleider") ? "" : `user${req.session.user}`,
+        req.session.type.split(",").includes("begeleider") ? "" : req.session.user,
     ])
 })
 
