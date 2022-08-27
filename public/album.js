@@ -12,6 +12,7 @@ const file = document.querySelector("#file");
 const deleteBtn = document.getElementById('delete');
 const bulkDelete = document.getElementById("bulkDelete");
 const actions = document.getElementById("actions");
+const title = document.querySelector(".title");
 
 const months = [
     "January",
@@ -31,8 +32,14 @@ const months = [
 const urlParams = new URLSearchParams(window.location.search);
 const album = urlParams.get("album");
 
-const res = await fetch(`/files/${album}`);
-const files = await res.json();
+const filesResponse = await fetch(`/files/${album}`);
+const files = await filesResponse.json();
+
+const albumNameResponse = await fetch(`/getAlbums`);
+const albums = await albumNameResponse.json();
+const albumName = albums[urlParams.get("album")].name;
+title.innerHTML = albumName;
+document.title = `${albumName} | DJO Media`;
 
 const images = [];
 

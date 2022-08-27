@@ -26,9 +26,11 @@ for (const i in albumsJson) {
     title.innerText = album.name;
     meta.append(title);
 
-    const description = document.createElement("p");
-    description.innerText = album.description;
-    meta.append(description);
+    if (album.name != album.description) {
+        const description = document.createElement("p");
+        description.innerText = album.description;
+        meta.append(description);
+    }
 
     el.append(background, meta);
 
