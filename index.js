@@ -212,7 +212,7 @@ app.get("/file/:album/:id", (req, res) => {
     res.sendFile(`${__dirname}/data/files/${req.params.id}`);
 });
 app.get("/getAlbums", (req, res) => {
-    res.json(albums.sort((a, b) => a.name > b.name ? 1 : -1));
+    res.json(albums.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 })
 
 app.post("/createAlbum", (req, res) => {
