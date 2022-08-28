@@ -230,8 +230,6 @@ app.post("/createAlbum", (req, res) => {
     });
     fs.writeFileSync("data/albums.json", JSON.stringify(albums));
 
-    fs.writeFileSync(`${__dirname}/data/albums.json`, JSON.stringify(albums));
-
     res.redirect("/");
 })
 app.get("/delete/:album/:id", (req, res) => {
