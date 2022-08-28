@@ -147,7 +147,7 @@ app.post("/upload/:album", upload.array("photo"), async (req, res) => {
                 if (err) return console.log(err);
 
                 fs.unlink(file.path, async () => {
-                    fs.rename(`${file.path}.mp4`, file.path, () => {
+                    fs.rename(`${file.path}.mp4`, file.path, async () => {
                         const res = await getMetaData(file.path);
                         albums[req.params.album].files.push({
                             id: file.path.split("/")[2],
