@@ -221,17 +221,12 @@ app.post("/createAlbum", (req, res) => {
     if (typeof req.body.description === "undefined") return res.send("No description given!");
     if (!req.session.type.split(",").includes("begeleider")) return res.send("Not authorized!");
 
-    const dir = `data/${req.body.name}`;
-    if (fs.existsSync(dir)) return res.send("Album already exists!");
-
-    fs.mkdirSync(__dirname + "/" + dir);
-
     albums.push({
         name: req.body.name,
-        dir: dir,
         public: req.body.public === "true",
         description: req.body.description,
-        preview: req.body.preview
+        preview: req.body.preview,
+        files: []
     });
     fs.writeFileSync("data/albums.json", JSON.stringify(albums));
 
