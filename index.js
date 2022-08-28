@@ -171,16 +171,16 @@ app.post("/upload/:album", upload.array("photo"), async (req, res) => {
                 .toFile(`${file.path}.webp`)
                 .then(info => {
                     fs.unlink(file.path, () => {
-                        fs.rename(`${file.path}.webp`, file.path, () => {});
-
-                        albums[req.params.album].files.push({
-                            id: file.path.split("/")[2],
-                            date: new Date().getTime(),
-                            user: req.session.user,
-                            meta: sizeOf(file.path),
-                            type: "image"
-                        })
-                        fs.writeFileSync("data/albums.json", JSON.stringify(albums))
+                        fs.rename(`${file.path}.webp`, file.path, () => {
+                            albums[req.params.album].files.push({
+                                id: file.path.split("/")[2],
+                                date: new Date().getTime(),
+                                user: req.session.user,
+                                meta: sizeOf(file.path),
+                                type: "image"
+                            })
+                            fs.writeFileSync("data/albums.json", JSON.stringify(albums))
+                        });
                     });
                 })
                 .catch(err => {
