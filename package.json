@@ -1,7 +1,9 @@
 {
   "name": "camera",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
+    "@djoamersfoort/djo-login-js": "github:djoamersfoort/djo-login-js",
     "axios": "^0.26.1",
     "express": "^4.17.3",
     "express-session": "^1.17.2",
