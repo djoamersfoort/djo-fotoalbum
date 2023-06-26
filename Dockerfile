@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:18
 
 RUN apt -yy update && apt -yy install ffmpeg && apt clean
 
