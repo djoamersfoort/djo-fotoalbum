@@ -10,7 +10,7 @@
   <body>
     <div class="container">
         <div class="preview">
-            <div class="tile">
+            <div class="tile" id="tile">
                 <div class="meta">
                     <h2 id="titlePreview"></h2>
                     <p id="descriptionPreview"></p>
@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="form">
-            <form action="/createAlbum" method="post">
+            <form id="form" method="post">
                 <label for="name">Name</label>
                 <input autofocus autocomplete="off" type="text" name="name" id="name">
                 <label for="public">Public</label>
@@ -28,8 +28,9 @@
                 </select>
                 <label for="description">Description</label>
                 <input autocomplete="off" type="text" id="description" name="description">
-                <label for="preview" class="hidden"></label><input class="hidden" type="text" id="preview" name="preview" value="">
-                <input type="submit" value="Create">
+                <label for="preview" class="hidden"></label>
+                <input class="hidden" type="text" id="preview" name="preview" value="">
+                <input id="action" type="submit" value="Create">
             </form>
         </div>
     </div>

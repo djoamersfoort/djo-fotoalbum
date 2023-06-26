@@ -188,13 +188,23 @@ body {
 
 .menu {
     display: flex;
+    justify-content: space-between;
     padding: 5px;
     background-color: #303039;
     color: #fff;
+    align-items: center;
 }
 .menu .title {
     font-size: 1.2em;
     font-weight: bold;
     text-decoration: none;
     color: #fff;
+}
+
+.edit {
+    display: none;
+}
+.edit img {
+    filter: invert(1);
+    height: 1.2em;
 }

@@ -190,6 +190,22 @@ app.post("/createAlbum", djo.requireLogin, (req, res) => {
 
     res.redirect("/");
 })
+app.post('/update/:album', djo.requireLogin, (req, res) => {
+    if (!req.body.name || !req.body.public || typeof req.body.description === 'undefined')
+        return res.send("invalid form!");
+    if (!req.session.djo.accountType.split(",").includes("begeleider"))
+        return res.send("Not authorized!");
+
+    albums[req.params.album] = {
+        ...albums[req.params.album],
+        name: req.body.name,
+        public: req.body.public === 'true',
+        description: req.body.description
+    }
+    fs.writeFileSync("data/albums.json", JSON.stringify(albums));
+
+    res.redirect('/')
+})
 app.get("/delete/:album/:id", djo.requireLogin, (req, res) => {
     if (typeof albums[req.params.album] === "undefined") return res.send("Album not found!");
     const filter = albums[req.params.album].files.filter(file => file.id === req.params.id);

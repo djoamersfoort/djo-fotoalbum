@@ -13,6 +13,7 @@ const deleteBtn = document.getElementById('delete');
 const bulkDelete = document.getElementById("bulkDelete");
 const actions = document.getElementById("actions");
 const title = document.querySelector(".title");
+const edit = document.getElementById('edit')
 
 const months = [
     "January",
@@ -309,6 +310,8 @@ const pRes = await fetch("/permissions");
 permissions = await pRes.json();
 if (permissions.includes("")) {
     star.style.display = "block";
+    edit.style.display = 'block'
+    edit.href = `/create.html?album=${album}`
 } else {
     star.style.display = "none";
 }
