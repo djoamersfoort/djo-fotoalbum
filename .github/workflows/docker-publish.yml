@@ -9,9 +9,6 @@ on:
     - cron:  '0 8 1 * *'
   workflow_dispatch: {}
 
-env:
-  IMAGE_NAME: docker.pkg.github.com/djoamersfoort/djo-fotoalbum/fotoalbum:main
-
 jobs:
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
@@ -22,9 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
-
       - name: Docker Login
         uses: docker/login-action@v2.1.0
         with:
@@ -32,6 +26,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push image
-        run: |
-          docker push $IMAGE_NAME
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4.0.0
+        with:
+          file: Dockerfile
+          context: .
+          push: true
+          tags: ghcr.io/djoamersfoort/djo-fotoalbum/fotoalbum:main
