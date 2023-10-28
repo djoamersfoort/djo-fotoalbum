@@ -208,3 +208,39 @@ body {
     filter: invert(1);
     height: 1.2em;
 }
+
+.uploading {
+    color: #fff;
+    background: #22222c;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.progress {
+    --progress: 0;
+    position: relative;
+    background: #303039;
+    height: 20px;
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: calc(100% * var(--progress));
+    background: lightgreen;
+    transition: .3s ease;
+}

@@ -94,6 +94,7 @@ app.post("/upload/:album", djo.requireLogin, upload.array("photo"), async (req, 
         const file = req.files[i];
 
         if (!file) continue;
+        file.path = file.path.replaceAll('\\', '/')
         if (file.mimetype.startsWith("video/")) {
             exec(`ffmpeg -i "${file.path}" -c:v libx264 -preset veryfast -crf 22 -c:a aac -b:a 128k -strict -2 "${file.path}.mp4"`, async (err, stdout, stderr) => {
                 if (err) return console.log(err);

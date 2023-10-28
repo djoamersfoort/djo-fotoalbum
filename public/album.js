@@ -14,6 +14,8 @@ const bulkDelete = document.getElementById("bulkDelete");
 const actions = document.getElementById("actions");
 const title = document.querySelector(".title");
 const edit = document.getElementById('edit')
+const uploading = document.getElementById('uploading')
+const progress = document.getElementById('progress')
 
 const months = [
     "January",
@@ -286,15 +288,23 @@ file.addEventListener("change", async e => {
     for (let i in file.files) {
         formData.append("photo", file.files[i]);
     }
-    let res = await fetch(`/upload/${album}`, {
-        method: "POST",
-        body: formData,
-    });
+    const xhr = new XMLHttpRequest()
+    uploading.style.display = 'flex'
+    const success = await new Promise((resolve, reject) => {
+        xhr.upload.addEventListener("progress", (event) => {
+            if (event.lengthComputable) {
+                progress.style.setProperty('--progress', `${event.loaded / event.total}`)
+                console.log("upload progress:", event.loaded / event.total);
+            }
+        });
+        xhr.addEventListener("loadend", () => {
+            resolve(xhr.readyState === 4 && xhr.status === 200);
+        });
 
-    const body = await res.json();
-
-    if (body.error) return alert(body.msg);
-    window.location.reload();
+        xhr.open('POST', `/upload/${album}`, true)
+        xhr.send(formData)
+    })
+    window.location.reload()
 })
 
 deleteBtn.addEventListener("click", () => {
