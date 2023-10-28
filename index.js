@@ -31,13 +31,6 @@ if (fs.existsSync('./data/albums.json')) {
     albums = []
 }
 
-if (!configFile.lastVersion) {
-    console.log("Starting migration to version 2022.8.27.1")
-    require("./migrate");
-    configFile = require("./data/config.json");
-    albums = require("./data/albums.json");
-}
-
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
